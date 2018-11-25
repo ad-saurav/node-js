@@ -11,7 +11,7 @@ const logger = winston.createLogger({
         ),       
         transports: [
             new winston.transports.Console({level:'info', colorize: true}),
-            new winston.transports.File({filename: `${global.__basedir}/user-registration.log`, level: 'debug'})
+            new winston.transports.File({filename: `${global.__basedir}/nodejs-express-mysql-crud.log`, level: 'debug'})
         ]
     });
 

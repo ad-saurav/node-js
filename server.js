@@ -3,7 +3,7 @@
 const express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
-    dotenv = require('dotenv').config({ path: process.env.USERPROFILE + "/user-registration.env" }),
+    dotenv = require('dotenv').config({ path: process.env.USERPROFILE + "/nodejs-express-mysql-crud.env" }),
     cors = require('cors'),
     corsOptions = {
         origin: 'http://localhost:4200',
