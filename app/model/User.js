@@ -101,27 +101,36 @@ User.checkUserNotExists = (user) => {
 };
 
 User.updateById = (id, user, result) => {
-    conn.query("UPDATE user SET first_name = ?, last_name = ?, password = ? WHERE id = ?", [user.first_name, user.last_name,user.password, id], (err, res) => {
-        if(err) {
-            logger.debug('Error: '+ err);
-            console.log("error: ", err);
-            result(null, err);
-        } else{   
-            result(null, res);
-        }
-    }); 
+
+    conn.beginTransaction(err => {
+        if(err) result(err, null);
+
+        conn.query("UPDATE user SET first_name = ?, last_name = ?, password = ? WHERE id = ?", [user.first_name, user.last_name,user.password, id], (err, res) => {
+            if(err) {
+                logger.debug('Error: '+ err);
+                console.log("error: ", err);
+                result(null, err);
+            } else{   
+                result(null, res);
+            }
+        })
+    });
 };
 
 User.deleteUser = (id, result) => {
-    conn.query("DELETE FROM user WHERE id = ?", [id], (err, res) => {
-        if(err) {
-            logger.debug('Error: '+ err);
-            console.log("error: ", err);
-            result(null, err);
-        } else{
-            result(null, res);
-        }
-    }); 
+    conn.beginTransaction(err => {
+        if(err) result(err, null);
+
+        conn.query("DELETE FROM user WHERE id = ?", [id], (err, res) => {
+            if(err) {
+                logger.debug('Error: '+ err);
+                console.log("error: ", err);
+                result(null, err);
+            } else{
+                result(null, res);
+            }
+        })
+    });
 };
 
 User.comparePassword = (textPass, encryptedPasswd,) => {
