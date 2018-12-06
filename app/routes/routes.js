@@ -21,7 +21,7 @@ module.exports = (app, upload) => {
     // File Handling Controller Routes
     app.route('/files')
         .get(verifyToken, fileControllers.list_all_files)
-        .post(verifyToken, upload.any, fileControllers.upload_a_file);
+        .post(verifyToken, upload.any(), fileControllers.upload_a_file);
 
     app.route('/files/:filename')
         .get(verifyToken, fileControllers.download_a_file)

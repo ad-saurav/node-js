@@ -12,11 +12,10 @@ var connection = mysql.createConnection({
 });
 
 // connect to database
-new Promise((resolve, reject) => {
-    connection.connect((err) => {
-        if (err) reject(err);
-        return resolve(console.log('connected as id ' + connection.threadId))
-    })
+
+connection.connect(err => {
+    if (err) throw err;
+    console.log('connected as id ' + connection.threadId);
 });
 
 module.exports = connection;

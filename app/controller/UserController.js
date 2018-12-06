@@ -1,15 +1,13 @@
 'use strict';
 
-const User = require('../model/User.js'),
-    jwt = require("jsonwebtoken"),
-    logger = require('../logger/logger');
+const UserService = require('../service/UserService'),
+    logger = require('../logger/logger'),
+    User = require('../model/User');
 
 exports.list_all_users = (req, res) => {
-    User.getAllUsers((err, user) => {
+    UserService.getAllUsers((err, user) => {
         if (err)
-            res.send(err);
-        console.log('res', user);
-        logger.debug('Response: '+ user);
+            return res.send(err);
         res.send(user);
     });
 };
@@ -40,7 +38,7 @@ exports.create_an_user = async (req, res) => {
             // return res.status(400).send({ error:true, message: 'Password must contain 1 number, 1 small letter, 1 capital letter and 1 special cracters 1 special character [!,@,#,$,%,^,&]. Length should be 8 to 16 characters.' });
         }
 
-        User.checkUserNotExists(new_user)
+        UserService.checkUserNotExists(new_user)
             .then(val => {
                 logger.debug('Response: '+ val);
                 User.createUser(new_user, (err, user) => {
@@ -59,10 +57,10 @@ exports.create_an_user = async (req, res) => {
 };
 
 exports.read_an_user = (req, res) => {
-    User.getUserById(req.params.id, (err, user) => {
+    UserService.getUserById(req.params.id, (err, user) => {
         if (err) {
             logger.debug('Error: '+ err);
-            res.send(err);
+            return res.send(err);
         }
         res.json(user);
     });
@@ -70,10 +68,10 @@ exports.read_an_user = (req, res) => {
   
   
 exports.update_an_user = (req, res) => {
-    User.updateById(req.params.id, new User(req.body), (err, user) => {
+    UserService.updateById(req.params.id, new User(req.body), (err, user) => {
         if (err) {
             logger.debug('Error: '+ err);
-            res.send(err);
+            return res.send(err);
         }
         res.json(user);
     });
@@ -81,55 +79,28 @@ exports.update_an_user = (req, res) => {
   
   
 exports.delete_an_user = (req, res) => {  
-    User.deleteUser(req.params.id, (err, user) => {
+    UserService.deleteUser(req.params.id, (err, result) => {
         if (err) {
             logger.debug('Error: '+ err);
-            res.send(err);
+            return res.send(err);
         }
-        res.json({ message: 'User deleted successfully.' });
+        res.json({ result: result, message: 'User [' + req.params.id + '] deleted successfully.' });
     });
 };
 
-exports.authenticate_an_user = (req, res) => {
+exports.authenticate_an_user = async (req, res) => {
 
     const newUser = new User(req.body);
     logger.info('User id: ' + newUser.userid);
 
-    if (!newUser.userid && !newUser.password) {
-        res.status(400).send({ error:true, message: 'Please provide user id and password' });
-    } else {
-        User.getUserByUserId(newUser, async (err, user) => {
-            if (err) {
-                logger.debug('Error: '+ err);
-                res.json("User ID/Password is not valid");
-            }
-
-            var bool = User.comparePassword(newUser.password, user.password);
-            
-            if (bool) {
-                const payload = {
-                    userid: user.userid,
-                    created: user.created,
-                    modified: user.modified
-                };
-                var token = jwt.sign(payload, process.env.JWT_ENCRYPTION, {
-                    expiresIn: process.env.JWT_EXPIRATION
-                });
-                var decoded = jwt.decode(token);
-                
-                res.json({
-                    success: true,
-                    userid: user.userid,
-                    signedat: decoded.iat,
-                    expiredat: decoded.exp,
-                    token: token
-                });         
-            } else {
-                logger.debug('User ID/Password is not valid');
-                res.json("User ID/Password is not valid");
-            }
-        });
-    }
+    await UserService.authenticateAnUser(newUser, (err, result) => {
+        if (err) {
+            logger.debug('Error: ' + err);
+            return res.json("3. User ID/Password is not valid");
+        }
+        logger.debug('Result' + result)
+        res.json(result);  
+    });
 };
 
 exports.logout_an_user = (req, res) => { 

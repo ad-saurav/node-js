@@ -1,0 +1,4 @@
+# JS specific
+node_modules/**
+package-lock.json
+nodejs-express-mysql-crud.log

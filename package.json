@@ -9,7 +9,14 @@
     "testw": "jest --watch",
     "testc": "jest --coverage"
   },
-  "keywords": ["NodeJS", "MySQL", "CRUD", "Login", "Token", "Authorization"],
+  "keywords": [
+    "NodeJS",
+    "MySQL",
+    "CRUD",
+    "Login",
+    "Token",
+    "Authorization"
+  ],
   "author": "Saurav Adhikari",
   "license": "ISC",
   "dependencies": {
